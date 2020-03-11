@@ -31,8 +31,7 @@ import com.devpoc.multiple.db.rdbsecondrepo.HospitalRepository;
 @RequestMapping("/api/hospitalinfo")
 public class HospitalInfoController {
 	
-	
-	@Autowired
+    @Autowired
     private PatientRepository patientRepositry;
 
     @Autowired
@@ -81,6 +80,30 @@ public class HospitalInfoController {
     @ResponseBody
     public Page<HosptitalMongo> getAllHospitalMongo1(@RequestHeader final HttpHeaders headers, final Pageable pageable) {
       return hospitalmongorepo.findAll(pageable);
+    }
+
+   @PostMapping(value = "/addhospitalstordb")
+    @ApiOperation(value="save All Hospitlas to rdb", notes="Gets all hospitals in the h2", nickname="getHospitals")
+    public Hospital saveHospitals(@RequestBody(required=true)Hospital hospital){
+    	return hospitalRepository.saveAndFlush(hospital);
+    }
+    
+    @PostMapping(value = "/addpatientstordb")
+    @ApiOperation(value="save All Hospitlas to rdb", notes="Gets all patients in the h2", nickname="adpatients")
+    public Patient saveHospitals(@RequestBody(required=true)Patient patient){
+    	return patientRepositry.saveAndFlush(patient);
+    }
+    
+    @PostMapping(value = "/addhospitaltomongo")
+    @ApiOperation(value="Get All Hospitlas to mongodb", notes="save all hospitals in the mongodb", nickname="getHospitals")
+    public HosptitalMongo saveHospitalstomongo(@RequestBody(required=true)HosptitalMongo hospital){
+    	return hospitalmongorepo.save(hospital);
+    }
+    
+    @RequestMapping(value = "/hospitals", method = RequestMethod.GET)
+    @ApiOperation(value="Get matching Hospitlas with number", notes="Get matching hospitals in the system using hospitalNumber", nickname="getHospitalswithmatchingnumber")
+    public List<HosptitalMongo> getAllHospitals(@RequestParam(name="hospitalNumber", required=false)String hospitalNumber){
+        return hospitalmongorepo.findAll().stream().filter(s->s.getHospitalNumber().equalsIgnoreCase(hospitalNumber)).collect(Collectors.toList());
     }
 
 
